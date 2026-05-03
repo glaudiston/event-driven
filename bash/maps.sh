@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+# depends on
+# github.com/glaudiston/pragma_once
+source $(dirname $(realpath $BASH_SOURCE))/pragma_once/bash/pragma_once.sh || return 0;
 
 get_map_count(){
 	declare -A v=$(get_map $1)

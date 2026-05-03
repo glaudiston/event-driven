@@ -1,7 +1,7 @@
 # Bash Event Manager
 
 A lightweight, file-based Publish/Subscribe (Pub/Sub) event manager implemented entirely in Bash. This library allows you to decouple 
-components of your shell scripts by implementing an event-driven architecture.
+components of your shell scripts by implementing a generic event-driven architecture.
 
 ## 🚀 Features
 
@@ -10,7 +10,8 @@ components of your shell scripts by implementing an event-driven architecture.
 - **Event Persistence**: Every event is persisted to a `.jsonl` (JSON Lines) file for audit trails and debugging.
 - **Concurrency Safe**: Uses `flock` to prevent race conditions during event logging.
 - **Asynchronous Execution**: Handlers are triggered in the background, ensuring the main process is not blocked by slow subscribers.
-- **Integrity Tracking**: Generates a unique MD5 hash for every event based on the previous event's hash, timestamp, and payload.
+- **Integrity Tracking**: Generates a unique MD5 hash for every event based on the previous event's hash, timestamp, and payload, 
+creating a verifiable chain.
 
 ## 🛠 Prerequisites
 
@@ -34,53 +35,52 @@ source ./event.sh
 ```
 
 ### 2. Subscribing to Events
-Define a handler function and register it to a topic using `subscribe`.
+Define a handler function and register it to a topic using `subscribe`. 
 
-```bash
-# Define a handler
-my_handler() {
-    local topic=$1
-    local task=$2
-    local status=$3
-    local msg=$4
-    echo "Received event: $task on topic $topic with status $status. Message: $msg"
-}
-
-# Subscribe the handler to a topic
-subscribe "USER_SIGNUP" "my_handler"
-```
-
-### 3. Publishing Events
-Trigger all subscribers of a topic using `publish`.
-
-```bash
-# publish <topic> <task> [status] [message]
-publish "USER_SIGNUP" "send_welcome_email" "SUCCESS" "User joined from IP 1.2.3.4"
-```
-
-## 🧪 Testing
-
-A comprehensive test suite is provided in `event_test.sh`. It covers:
-- Single subscriber execution.
-- Fan-out (multiple subscribers) capability.
-- Topic isolation (ensuring events don't leak between topics).
-- Persistence (verifying JSONL logs are created).
-
-To run the tests:
-```bash
-chmod +x event_test.sh
-./event_test.sh
-```
+**Handler Signature:** Handlers must accept four arguments: `topic`, `hash`, `timestamp`, and `payload`.
+Each entry contains:
+- `hash`: A unique chain-link hash for the event.
+- `ts`: Nanosecond timestamp.
+- `topic`: The event category.
+- `payload`: The data related to the published event.
 
 ## 📂 Data Storage
 
 Events are stored in:
 `${XDG_DATA_HOME:-$HOME/.local/share}/[app_name]/events/[topic].session_data.jsonl`
 
-Each entry contains:
-- `hash`: A unique chain-link hash for the event.
-- `ts`: Nanosecond timestamp.
-- `topic`: The event category.
-- `task`: The specific action.
-- `status`: Status of the task.
-- `msg`: Additional metadata.
+```bash
+# Define a handler
+my_handler() {
+    local topic=$1
+    local hash=$2
+    local ts=$3
+    local payload=$4
+    echo "Topic: $topic | Payload: $payload (Hash: $hash)"
+}
+
+# Subscribe the handler to a topic
+subscribe "USER_LOGIN" "my_handler"
+```
+
+### 3. Publishing Events
+Trigger all subscribers of a topic using `publish`. Any arguments provided after the topic are treated as the event payload.
+
+```bash
+# publish <topic> <payload>
+publish "USER_LOGIN" "user_id=123 ip=1.1.1.1"
+```
+
+## 🧪 Testing
+
+A comprehensive test suite is provided in `event_test.sh`. It covers:
+- **Single subscriber execution**: Verifying the payload reaches the handler.
+- **Fan-out**: Ensuring multiple subscribers are triggered by one event.
+- **Topic isolation**: Ensuring events published to Topic A do not trigger handlers for Topic B.
+- **Persistence**: Verifying that every event is logged to disk in JSONL format.
+
+To run the tests:
+```bash
+chmod +x event_test.sh
+./event_test.sh
+```

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # depends on
 # github.com/glaudiston/pragma_once
-source $(dirname $(realpath $BASH_SOURCE))/pragma_once/bash/pragma_once.sh && return 0;
+source $(dirname $(realpath $BASH_SOURCE))/pragma_once/bash/pragma_once.sh || return 0;
 get_array() {
 	touch $SHM.$1
 	cat $SHM.$1
