@@ -16,21 +16,20 @@ publish() {
 	local task=$2;
 	local status="";
 	local msg="";
+	local ts=$(date +%s%N)
 	local topicEventStore="$DATA_PATH/${topic}.${EVENT_STORE}"
 	touch "$topicEventStore"
 	[ $# -gt 2 ] && status=$3;
 	[ $# -gt 3 ] && msg=$4;
-
 	(
 		flock -x 200
 		for (( i=0; i<$(get_array_count $topic); i++ ));
 		do 
 			local sub=$(get_array_item $topic $i);
 			if [[ -n "$sub" ]]; then
-				"$sub" "$topic" "$task" "$status" "$msg" &
+				"$sub" "$topic" "$task" "$status" "$msg" "$ts" &
 			fi
 		done;
-		local ts=$(date +%s%N)
 		local topicLastHash="$(tail -1 "${topicEventStore}"|grep -oP '"hash":"\K[^"]+')";
 		local hash_data="${topicLastHash}${ts}${topic}${task}${status}${msg}";
 		local hash=$(md5sum<<<"$hash_data"|cut -d\  -f1)
