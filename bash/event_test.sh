@@ -33,6 +33,7 @@ assert_contains() {
     local haystack="$1"
     local needle="$2"
     local name="$3"
+    set +e
     ((TOTAL_TESTS++))
 
     if [[ "$haystack" == *"$needle"* ]]; then
@@ -91,7 +92,7 @@ mock_file_handler() {
 test_single_subscriber() {
     echo -e "\n${YELLOW}Running: Single Subscriber Test...${NC}"
     > "$OUT_FILE"
-    
+ 
     subscribe "USER_LOGIN" "mock_console_handler"
     
     # Generic event: Topic "USER_LOGIN", Payload "user_id=123 ip=1.1.1.1"
