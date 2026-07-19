@@ -6,21 +6,18 @@ get_array() {
 }
 
 get_array_count(){
-	declare -a v;
-	v=( $(get_array $1) )
+	declare -a v=$(get_array $1)
 	echo ${#v[@]}
 }
 
 get_array_item(){
-	declare -a v;
-	v=( $(get_array "$1") );
+	declare -a v=$(get_array "$1");
 	echo "${v[$2]}";
 }
 
 set_array_item(){
 	lock "$SHM.$1"
-	local items;
-	items=$(get_array "$1")
+	local items=$(get_array "$1")
 	if [ "$items" == "" ]; then {
 		declare -a v=();
 	} else

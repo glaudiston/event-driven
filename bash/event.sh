@@ -5,7 +5,7 @@
 #
 # Depends on:
 # github.com/glaudiston/pragma_once
-source "$(dirname $(realpath $BASH_SOURCE))/pragma_once/bash/import_bash.sh";
+source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/pragma_once/bash/import_bash.sh";
 import_bash ./data_types.sh
 APP_NAME=${BASH_SOURCE[-1]}
 HOME=${HOME:-/home/$(whoami)}
