@@ -5,9 +5,10 @@
 #
 # Depends on:
 # github.com/glaudiston/pragma_once
-source $(dirname $(realpath $BASH_SOURCE))/pragma_once/bash/pragma_once.sh || return 0;
-source $(dirname $(realpath $BASH_SOURCE))/data_types.sh
+source "$(dirname $(realpath $BASH_SOURCE))/pragma_once/bash/import_bash.sh";
+import_bash ./data_types.sh
 APP_NAME=${BASH_SOURCE[-1]}
+HOME=${HOME:-/home/$(whoami)}
 DATA_PATH=${XDG_DATA_HOME:-$HOME/.local/share}/${APP_NAME}/events
 mkdir -p "$DATA_PATH";
 EVENT_STORE="session_data.jsonl"
