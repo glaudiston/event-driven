@@ -33,12 +33,11 @@ assert_contains() {
     local haystack="$1"
     local needle="$2"
     local name="$3"
-    set +e
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || :
 
     if [[ "$haystack" == *"$needle"* ]]; then
         echo -e "  ${GREEN}✅ PASS:${NC} $name"
-        ((PASSED_TESTS++))
+        ((PASSED_TESTS++)) || :
     else
         echo -e "  ${RED}❌ FAIL:${NC} $name"
         echo -e "     Expected to find: '$needle' in '$haystack'"
@@ -49,11 +48,11 @@ assert_equals() {
     local expected="$1"
     local actual="$2"
     local name="$3"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || :
 
     if [[ "$expected" == "$actual" ]]; then
         echo -e "  ${GREEN}✅ PASS:${NC} $name"
-        ((PASSED_TESTS++))
+        ((PASSED_TESTS++)) || :
     else
         echo -e "  ${RED}❌ FAIL:${NC} $name"
         echo -e "     Expected: '$expected' | Actual: '$actual'"
@@ -63,10 +62,10 @@ assert_equals() {
 assert_exists() {
     local file="$1"
     local name="$2"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || :
     if [[ -f "$file" ]]; then
         echo -e "  ${GREEN}✅ PASS:${NC} $name"
-        ((PASSED_TESTS++))
+        ((PASSED_TESTS++)) || :
     else
         echo -e "  ${RED}❌ FAIL:${NC} $name (File $file not found)"
     fi
@@ -148,11 +147,11 @@ test_persistence() {
     local line_count=$(wc -l < "$expected_log" 2>/dev/null || echo 0)
     if [ "$line_count" -gt 0 ]; then
         echo -e "  ${GREEN}✅ PASS:${NC} Events are being persisted (Lines: $line_count)"
-        ((PASSED_TESTS++))
-        ((TOTAL_TESTS++))
+        ((PASSED_TESTS++)) || :
+        ((TOTAL_TESTS++)) || :
     else
         echo -e "  ${RED}❌ FAIL:${NC} Log file is empty"
-        ((TOTAL_TESTS++))
+        ((TOTAL_TESTS++)) || :
     fi
 }
 
