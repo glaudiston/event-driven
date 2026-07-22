@@ -42,5 +42,11 @@ publish() {
 }
 
 subscribe() {
-	set_array_item $1 $2
+	local i;
+	local c=$(get_array_count $1);
+	for (( i=0; i<c; i++ )); do
+		[[ "$(get_array_item "$1" "$i")" == "$2" ]] && return;
+	done;
+	# only subscribe if not already subscribed
+	set_array_item "$1" "$2"
 }
