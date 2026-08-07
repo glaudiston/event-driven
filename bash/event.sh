@@ -45,8 +45,11 @@ subscribe() {
 	local i;
 	local c=$(get_array_count $1);
 	for (( i=0; i<c; i++ )); do
-		[[ "$(get_array_item "$1" "$i")" == "$2" ]] && return;
+		[[ "$(get_array_item "$1" "$i")" == "$2" ]] && return; # only subscribe if not already subscribed
 	done;
-	# only subscribe if not already subscribed
 	set_array_item "$1" "$2"
+}
+
+unsubscribe() {
+	remove_array_item "$1" "$2"
 }

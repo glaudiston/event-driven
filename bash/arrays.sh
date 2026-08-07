@@ -29,3 +29,20 @@ set_array_item(){
 	unlock "$SHM.$1"
 }
 
+remove_array_item(){
+	lock "$SHM.$1"
+	local items=$(get_array "$1")
+	if [ "$items" == "" ]; then {
+		declare -a v=();
+	} else
+		declare -a v=$items;
+	fi;
+	local i;
+	for (( i=0; i<${#v[@]}; i++ ));
+	do
+		[[ "${v[i]}" == "$2" ]] && unset 'v[i]';
+	done;
+	v=("${v[@]}");
+	declare -p v | cut -d= -f2- > "$SHM.$1"
+	unlock "$SHM.$1"
+}
