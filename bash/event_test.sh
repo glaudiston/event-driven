@@ -16,7 +16,8 @@ TOTAL_TESTS=0
 PASSED_TESTS=0
 
 # Use Shared Memory for speed and to avoid polluting disk
-DATA_PATH=/dev/shm/event-tests
+[ -d /dev/shm ] && SHM_DIR=/dev/shm || SHM_DIR=/tmp
+DATA_PATH=$SHM_DIR/event-tests
 mkdir -p $DATA_PATH
 LOG_FILE="${DATA_PATH}/session_data.jsonl"
 OUT_FILE="${DATA_PATH}/test_output.txt"

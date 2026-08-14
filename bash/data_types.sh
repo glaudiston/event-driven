@@ -6,7 +6,8 @@ source "$(dirname "$(realpath $BASH_SOURCE)")/pragma_once/bash/import_bash.sh";
 import_bash ./arrays.sh;
 import_bash ./maps.sh;
 # --- State ---
-SHM=/dev/shm/tui.$$
+[[ -d /dev/shm ]] && SHM_DIR=/dev/shm || SHM_DIR=/tmp
+SHM=$SHM_DIR/tui.$$
 datatypes_cleanup(){
 	rm -f ${SHM}*
 }
