@@ -16,17 +16,20 @@ publish() {
 	local topic=$1;
 	shift # to remove the topic from the argument list
 	local payload="$*";
-	local ts=$(date +%s%N)
+	local ts;
+	ts=$(date +%s%N)
 	local topicEventStore="$DATA_PATH/${topic}.${EVENT_STORE}"
 	touch "$topicEventStore"
 	(
-		local topicLastHash="$(tail -1 "${topicEventStore}"|grep -oP '"hash":"\K[^"]+')";
+		local topicLastHash="$(tail -1 "${topicEventStore}"|grep -o '"hash":"[^"]+.')";
 		local hash_data="${topicLastHash}${ts}${topic}${payload}";
-		local hash=$(md5sum<<<"$hash_data"|cut -d\  -f1)
+		local hash;
+		hash=$(md5sum<<<"$hash_data"|cut -d\  -f1)
 		flock -x 200
-		for (( i=0; i<$(get_array_count $topic); i++ ));
+		for (( i=0; i<$(get_array_count "$topic"); i++ ));
 		do 
-			local sub=$(get_array_item $topic $i);
+			local sub;
+			sub=$(get_array_item "$topic" "$i");
 			if [[ -n "$sub" ]]; then
 				"$sub" "$topic" "$hash" "$ts" "$payload" &
 			fi
@@ -43,7 +46,8 @@ publish() {
 
 subscribe() {
 	local i;
-	local c=$(get_array_count $1);
+	local c;
+	c="$(get_array_count "$1")";
 	for (( i=0; i<c; i++ )); do
 		[[ "$(get_array_item "$1" "$i")" == "$2" ]] && return; # only subscribe if not already subscribed
 	done;
